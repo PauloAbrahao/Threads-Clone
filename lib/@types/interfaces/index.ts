@@ -22,4 +22,19 @@ interface ThreadCardProps {
   isComment?: boolean;
 }
 
-export type { ThreadCardProps };
+interface ProfileHeaderProps {
+  accountId: string;
+  authUserId: string;
+  name: string;
+  username: string;
+  imgUrl: string;
+  bio: string;
+}
+
+interface ThreadsTabProps {
+  currentUserId: string;
+  accountId: string;
+  accountType: string;
+}
+
+export type { ThreadCardProps, ProfileHeaderProps, ThreadsTabProps };

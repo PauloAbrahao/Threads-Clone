@@ -84,24 +84,23 @@ const AccountProfile = ({ user, btnTitle }: Props) => {
 
   const onSubmit = async (values: z.infer<typeof UserValidation>) => {
     const blob = values.profile_photo;
-    const hasImageChanged = isBase64Image(blob);
 
+    const hasImageChanged = isBase64Image(blob);
     if (hasImageChanged) {
       const imgRes = await startUpload(files);
 
-      if (imgRes && imgRes[0].url) {
-        values.profile_photo = imgRes[0].url;
+      if (imgRes && imgRes[0].fileUrl) {
+        values.profile_photo = imgRes[0].fileUrl;
       }
     }
 
-    // BACKEND CALL
     await updateUser({
-      userId: user.id,
-      username: values.username,
       name: values.name,
+      path: pathname,
+      username: values.username,
+      userId: user.id,
       bio: values.bio,
       image: values.profile_photo,
-      path: pathname,
     });
 
     if (pathname === "/profile/edit") {
