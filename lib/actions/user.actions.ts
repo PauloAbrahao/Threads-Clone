@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import User from "../models/user.model";
-import Thread from "../models/thread.models";
+import Thread from "../models/thread.model";
 import { connectToDB } from "../mongoose";
 import { FilterQuery, SortOrder } from "mongoose";
 
