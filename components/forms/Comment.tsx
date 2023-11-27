@@ -12,7 +12,6 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
 } from "@/components/ui/form";
 
 import { Input } from "../ui/input";
@@ -20,18 +19,17 @@ import { Button } from "../ui/button";
 
 import { CommentValidation } from "@/lib/validations/thread";
 import { addCommentToThread } from "@/lib/actions/thread.actions";
-// import { addCommentToThread } from "@/lib/actions/thread.actions";
 
-interface CommentProps {
+interface Props {
   threadId: string;
   currentUserImg: string;
   currentUserId: string;
 }
 
-const Comment = ({ threadId, currentUserImg, currentUserId }: CommentProps) => {
+function Comment({ threadId, currentUserImg, currentUserId }: Props) {
   const pathname = usePathname();
 
-  const form = useForm({
+  const form = useForm<z.infer<typeof CommentValidation>>({
     resolver: zodResolver(CommentValidation),
     defaultValues: {
       thread: "",
@@ -51,39 +49,39 @@ const Comment = ({ threadId, currentUserImg, currentUserId }: CommentProps) => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="comment-form">
+      <form className='comment-form' onSubmit={form.handleSubmit(onSubmit)}>
         <FormField
           control={form.control}
-          name="thread"
+          name='thread'
           render={({ field }) => (
-            <FormItem className="flex gap-3 items-center w-full">
+            <FormItem className='flex w-full items-center gap-3'>
               <FormLabel>
                 <Image
                   src={currentUserImg}
-                  alt="Profile image"
+                  alt='current_user'
                   width={48}
                   height={48}
-                  className="rounded-full object-cover"
+                  className='rounded-full object-cover'
                 />
               </FormLabel>
-              <FormControl className="border-none bg-transparent">
+              <FormControl className='border-none bg-transparent'>
                 <Input
-                  type="text"
-                  placeholder="Comment..."
+                  type='text'
                   {...field}
-                  className="no-focus text-light-1 outline-none"
+                  placeholder='Comment...'
+                  className='no-focus text-light-1 outline-none'
                 />
               </FormControl>
             </FormItem>
           )}
         />
 
-        <Button type="submit" className="comment-form_btn">
+        <Button type='submit' className='comment-form_btn'>
           Reply
         </Button>
       </form>
     </Form>
   );
-};
+}
 
 export default Comment;
