@@ -120,6 +120,7 @@ interface Result {
 }
 
 interface ThreadsTabProps {
+  value: string;
   currentUserId: string;
   accountId: string;
   accountType: string;

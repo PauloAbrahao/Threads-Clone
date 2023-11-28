@@ -8,6 +8,7 @@ import Thread from "../models/thread.model";
 import User from "../models/user.model";
 
 import { connectToDB } from "../mongoose";
+import { undefined } from "zod";
 
 export async function fetchUser(userId: string) {
   try {
@@ -178,6 +179,45 @@ export async function getActivity(userId: string) {
     return replies;
   } catch (error) {
     console.error("Error fetching replies: ", error);
+    throw error;
+  }
+}
+
+export async function getReplies(userId: string) {
+  try {
+    connectToDB();
+
+    // Find all comments created by the user
+    const userComments = await Thread.find({ author: userId });
+
+    // Collect all the parent thread ids from the 'parent' field of each user comment
+    const parentThreadIds = userComments
+      // Filter out comments without parentId
+      // .filter((comment) => comment.parentId)
+      .map((comment) => comment._id);
+
+    // Find and return the parent threads excluding the ones created by the same user
+    const threadsReplies = await Thread.find({
+      _id: { $in: parentThreadIds },
+    })
+      .populate({
+        path: "author",
+        model: User,
+        select: "name image _id",
+      })
+      .populate({
+        path: "children",
+        model: Thread,
+        populate: {
+          path: "author",
+          model: User,
+          select: "name image _id",
+        },
+      });
+    
+    return threadsReplies;
+  } catch (error) {
+    console.error("Error fetching threads replies: ", error);
     throw error;
   }
 }
