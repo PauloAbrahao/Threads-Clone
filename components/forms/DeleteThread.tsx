@@ -5,13 +5,8 @@ import { usePathname, useRouter } from "next/navigation";
 
 import { deleteThread } from "@/lib/actions/thread.actions";
 
-interface Props {
-  threadId: string;
-  currentUserId: string;
-  authorId: string;
-  parentId: string | null;
-  isComment?: boolean;
-}
+import { Button } from "../ui/button";
+import { DeleteThreadProps } from "@/lib/@types/interfaces";
 
 function DeleteThread({
   threadId,
@@ -19,26 +14,31 @@ function DeleteThread({
   authorId,
   parentId,
   isComment,
-}: Props) {
+}: DeleteThreadProps) {
   const pathname = usePathname();
   const router = useRouter();
 
   if (currentUserId !== authorId || pathname === "/") return null;
 
   return (
-    <Image
-      src='/assets/delete.svg'
-      alt='delte'
-      width={18}
-      height={18}
-      className='cursor-pointer object-contain'
+    <Button
+      className="flex flex-row gap-6 justify-between bg-stone-950 hover:bg-transparent"
       onClick={async () => {
         await deleteThread(JSON.parse(threadId), pathname);
         if (!parentId || !isComment) {
           router.push("/");
         }
       }}
-    />
+    >
+      <p className="text-light-1 text-sm">Delete</p>
+      <Image
+        src="/assets/delete.svg"
+        alt="delete"
+        width={18}
+        height={18}
+        className="cursor-pointer object-contain"
+      />
+    </Button>
   );
 }
 

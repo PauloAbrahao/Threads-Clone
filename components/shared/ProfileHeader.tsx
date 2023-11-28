@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { ProfileHeaderProps } from "@/lib/@types/interfaces";
 
 interface Props {
   accountId: string;
@@ -19,7 +20,7 @@ function ProfileHeader({
   imgUrl,
   bio,
   type,
-}: Props) {
+}: ProfileHeaderProps) {
   return (
     <div className='flex w-full flex-col justify-start'>
       <div className='flex items-center justify-between'>
