@@ -4,41 +4,13 @@ import { fetchCommunityPosts } from "@/lib/actions/community.actions";
 import { fetchUserPosts } from "@/lib/actions/user.actions";
 
 import ThreadCard from "../cards/ThreadCard";
+import { Result, ThreadsTabProps } from "@/lib/@types/interfaces";
 
-interface Result {
-  name: string;
-  image: string;
-  id: string;
-  threads: {
-    _id: string;
-    text: string;
-    parentId: string | null;
-    author: {
-      name: string;
-      image: string;
-      id: string;
-    };
-    community: {
-      id: string;
-      name: string;
-      image: string;
-    } | null;
-    createdAt: string;
-    children: {
-      author: {
-        image: string;
-      };
-    }[];
-  }[];
-}
-
-interface Props {
-  currentUserId: string;
-  accountId: string;
-  accountType: string;
-}
-
-async function ThreadsTab({ currentUserId, accountId, accountType }: Props) {
+async function ThreadsTab({
+  currentUserId,
+  accountId,
+  accountType,
+}: ThreadsTabProps) {
   let result: Result;
 
   if (accountType === "Community") {
@@ -52,7 +24,7 @@ async function ThreadsTab({ currentUserId, accountId, accountType }: Props) {
   }
 
   return (
-    <section className='mt-9 flex flex-col gap-10'>
+    <section className="mt-9 flex flex-col gap-10">
       {result.threads.map((thread) => (
         <ThreadCard
           key={thread._id}
