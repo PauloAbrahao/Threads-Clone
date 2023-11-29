@@ -35,12 +35,24 @@ async function ThreadsTab({
   }
 
   let threadsToRender = result.threads;
+  let parentId;
 
   // Check if the value is "replies" and fetch replies using getReplies
   if (value === "replies") {
-    const replies = await getReplies(userInfo._id);
-    threadsToRender = replies;
+    const { threadsReplies, parent } = await getReplies(userInfo._id);
+    threadsToRender = threadsReplies;
+    parentId = parent;
   }
+
+  let parent = {
+    authorName: "",
+    authorId: "",
+  };
+
+  parentId?.forEach((thread) => {
+    parent.authorName = thread.author.name;
+    parent.authorId = thread.author.id;
+  });
 
   return (
     <section className="mt-9 flex flex-col gap-10">
@@ -50,10 +62,11 @@ async function ThreadsTab({
           id={thread._id}
           currentUserId={currentUserId}
           parentId={thread.parentId}
+          parentInfo={parent}
           content={thread.text}
           author={
             accountType === "User"
-              ? { name: result.name, image: result.image, id: result.id } 
+              ? { name: result.name, image: result.image, id: result.id }
               : {
                   name: thread.author.name,
                   image: thread.author.image,

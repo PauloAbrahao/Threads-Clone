@@ -7,6 +7,7 @@ import { connectToDB } from "../mongoose";
 import User from "../models/user.model";
 import Thread from "../models/thread.model";
 import Community from "../models/community.model";
+import { CreateThreadProps } from "../@types/interfaces";
 
 export async function fetchPosts(pageNumber = 1, pageSize = 20) {
   connectToDB();
@@ -48,19 +49,12 @@ export async function fetchPosts(pageNumber = 1, pageSize = 20) {
   return { posts, isNext };
 }
 
-interface Params {
-  text: string;
-  author: string;
-  communityId: string | null;
-  path: string;
-}
-
 export async function createThread({
   text,
   author,
   communityId,
   path,
-}: Params) {
+}: CreateThreadProps) {
   try {
     connectToDB();
 

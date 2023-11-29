@@ -9,6 +9,7 @@ function ThreadCard({
   id,
   currentUserId,
   parentId,
+  parentInfo,
   content,
   author,
   community,
@@ -40,7 +41,19 @@ function ThreadCard({
           <div className="flex w-full flex-col">
             <Link href={`/profile/${author.id}`} className="w-fit">
               <h4 className="cursor-pointer text-base-semibold text-light-1">
-                {author.name}
+                {!parentId ? (
+                  <span>{author.name}</span>
+                ) : (
+                  <span>
+                    {author.name} replied{" "}
+                    <Link
+                      href={parentInfo ? `/profile/${parentInfo.authorId}` : ""}
+                      className="text-sky-500 underline underline-offset-2"
+                    >
+                      {parentInfo && parentInfo.authorName}
+                    </Link>
+                  </span>
+                )}
               </h4>
             </Link>
 

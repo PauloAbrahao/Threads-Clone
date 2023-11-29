@@ -9,6 +9,7 @@ import User from "../models/user.model";
 
 import { connectToDB } from "../mongoose";
 import { undefined } from "zod";
+import { UpdateUserProps } from "../@types/interfaces";
 
 export async function fetchUser(userId: string) {
   try {
@@ -23,15 +24,6 @@ export async function fetchUser(userId: string) {
   }
 }
 
-interface Params {
-  userId: string;
-  username: string;
-  name: string;
-  bio: string;
-  image: string;
-  path: string;
-}
-
 export async function updateUser({
   userId,
   bio,
@@ -39,7 +31,7 @@ export async function updateUser({
   path,
   username,
   image,
-}: Params): Promise<void> {
+}: UpdateUserProps): Promise<void> {
   try {
     connectToDB();
 
@@ -183,22 +175,34 @@ export async function getActivity(userId: string) {
   }
 }
 
+async function fetchParentAuthorInfo(parentId: string) {
+  try {
+    const parentThread = await Thread.find({ _id: parentId }).populate({
+      path: "author",
+      model: User,
+      select: "name image id",
+    });
+
+    return parentThread;
+  } catch (error) {
+    console.error("Error fetching parent author info: ", error);
+    throw error;
+  }
+}
+
 export async function getReplies(userId: string) {
   try {
     connectToDB();
 
     // Find all comments created by the user
-    const userComments = await Thread.find({ author: userId });
+    const userThreads = await Thread.find({ author: userId });
 
     // Collect all the parent thread ids from the 'parent' field of each user comment
-    const parentThreadIds = userComments
-      // Filter out comments without parentId
-      // .filter((comment) => comment.parentId)
-      .map((comment) => comment._id);
+    const parentThreadIds = userThreads.map((comment) => comment._id);
 
     // Find and return the parent threads excluding the ones created by the same user
     const threadsReplies = await Thread.find({
-      _id: { $in: parentThreadIds },
+      _id: { $in: parentThreadIds }, // Threads initiated by the user
     })
       .populate({
         path: "author",
@@ -214,8 +218,22 @@ export async function getReplies(userId: string) {
           select: "name image _id",
         },
       });
-    
-    return threadsReplies;
+
+    let parentId;
+
+    threadsReplies.map((val) => {
+      if (val.parentId) {
+        parentId = val.parentId;
+      }
+    });
+
+    let parent;
+
+    if (parentId) {
+      parent = await fetchParentAuthorInfo(parentId);
+    }
+
+    return { threadsReplies, parent };
   } catch (error) {
     console.error("Error fetching threads replies: ", error);
     throw error;

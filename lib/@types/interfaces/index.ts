@@ -12,6 +12,10 @@ interface CommunityCardProps {
 interface ThreadCardProps {
   id: string;
   currentUserId: string;
+  parentInfo: {
+    authorName: string;
+    authorId: string;
+  };
   parentId: string | null;
   content: string;
   author: {
@@ -126,6 +130,23 @@ interface ThreadsTabProps {
   accountType: string;
 }
 
+interface UpdateUserProps {
+  userId: string;
+  username: string;
+  name: string;
+  bio: string;
+  image: string;
+  path: string;
+}
+
+interface CreateThreadProps {
+  text: string;
+  author: string;
+  communityId: string | null;
+  path: string;
+}
+
+
 export type {
   CommunityCardProps,
   ThreadCardProps,
@@ -138,4 +159,6 @@ export type {
   ProfileHeaderProps,
   ThreadsTabProps,
   Result,
+  UpdateUserProps,
+  CreateThreadProps
 };
