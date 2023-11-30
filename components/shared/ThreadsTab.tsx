@@ -8,11 +8,11 @@ import {
 } from "@/lib/actions/user.actions";
 
 import ThreadCard from "../cards/ThreadCard";
-import { Result, ThreadsTabProps } from "@/lib/@types/interfaces";
+import { ParentInfo, Result, ThreadsTabProps } from "@/lib/@types/interfaces";
 import { currentUser } from "@clerk/nextjs";
 
 async function ThreadsTab({
-  value,
+  tabValue,
   currentUserId,
   accountId,
   accountType,
@@ -35,53 +35,71 @@ async function ThreadsTab({
   }
 
   let threadsToRender = result.threads;
-  let parentId;
+  let parentData;
 
   // Check if the value is "replies" and fetch replies using getReplies
-  if (value === "replies") {
-    const { threadsReplies, parent } = await getReplies(userInfo._id);
+  if (tabValue === "replies") {
+    const { threadsReplies, parentAuthor } = await getReplies(userInfo._id);
     threadsToRender = threadsReplies;
-    parentId = parent;
+    parentData = parentAuthor;
   }
 
-  let parent = {
-    authorName: "",
-    authorId: "",
-  };
+  let parent: ParentInfo[] = [];
 
-  parentId?.forEach((thread) => {
-    parent.authorName = thread.author.name;
-    parent.authorId = thread.author.id;
+  parentData?.forEach((thread) => {
+    const parentInfo: ParentInfo = {
+      authorName: thread.author.name,
+      authorId: thread.author.id,
+      authorThreadId: thread.id,
+    };
+
+    parent.push(parentInfo);
   });
 
   return (
     <section className="mt-9 flex flex-col gap-10">
-      {threadsToRender.map((thread) => (
-        <ThreadCard
-          key={thread._id}
-          id={thread._id}
-          currentUserId={currentUserId}
-          parentId={thread.parentId}
-          parentInfo={parent}
-          content={thread.text}
-          author={
-            accountType === "User"
-              ? { name: result.name, image: result.image, id: result.id }
-              : {
-                  name: thread.author.name,
-                  image: thread.author.image,
-                  id: thread.author.id,
-                }
+      {threadsToRender.map((thread) => {
+        let parentName: string | undefined;
+        let parentId: string | undefined;
+
+        parent.forEach((parentInfo) => {
+          if (
+            thread.parentId &&
+            thread.parentId.toString() === parentInfo.authorThreadId
+          ) {
+            parentName = parentInfo.authorName;
+            parentId = parentInfo.authorId;
           }
-          community={
-            accountType === "Community"
-              ? { name: result.name, id: result.id, image: result.image }
-              : thread.community
-          }
-          createdAt={thread.createdAt}
-          comments={thread.children}
-        />
-      ))}
+        });
+
+        return (
+          <ThreadCard
+            key={thread._id}
+            id={thread._id}
+            currentUserId={currentUserId}
+            parentId={thread.parentId}
+            parentAuthorId={parentId}
+            parentName={parentName}
+            content={thread.text}
+            author={
+              accountType === "User"
+                ? { name: result.name, image: result.image, id: result.id }
+                : {
+                    name: thread.author.name,
+                    image: thread.author.image,
+                    id: thread.author.id,
+                  }
+            }
+            community={
+              accountType === "Community"
+                ? { name: result.name, id: result.id, image: result.image }
+                : thread.community
+            }
+            createdAt={thread.createdAt}
+            comments={thread.children}
+          />
+        );
+      })}
     </section>
   );
 }

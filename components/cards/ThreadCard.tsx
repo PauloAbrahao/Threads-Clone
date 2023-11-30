@@ -9,7 +9,8 @@ function ThreadCard({
   id,
   currentUserId,
   parentId,
-  parentInfo,
+  parentAuthorId,
+  parentName,
   content,
   author,
   community,
@@ -47,10 +48,10 @@ function ThreadCard({
                   <span>
                     {author.name} replied{" "}
                     <Link
-                      href={parentInfo ? `/profile/${parentInfo.authorId}` : ""}
+                      href={parentName ? `/profile/${parentAuthorId}` : ""}
                       className="text-sky-500 underline underline-offset-2"
                     >
-                      {parentInfo && parentInfo.authorName}
+                      {parentName && parentName}
                     </Link>
                   </span>
                 )}

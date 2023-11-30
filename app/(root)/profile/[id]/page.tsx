@@ -60,7 +60,7 @@ async function Page({ params }: { params: { id: string } }) {
               >
                 {/* @ts-ignore */}
                 <ThreadsTab
-                  value={tab.value}
+                  tabValue={tab.value}
                   currentUserId={user.id}
                   accountId={userInfo.id}
                   accountType="User"

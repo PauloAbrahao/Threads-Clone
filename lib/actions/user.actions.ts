@@ -175,9 +175,9 @@ export async function getActivity(userId: string) {
   }
 }
 
-async function fetchParentAuthorInfo(parentId: string) {
+async function fetchParentAuthorInfo(parentThreadId: []) {
   try {
-    const parentThread = await Thread.find({ _id: parentId }).populate({
+    const parentThread = await Thread.find({ _id: parentThreadId }).populate({
       path: "author",
       model: User,
       select: "name image id",
@@ -219,21 +219,23 @@ export async function getReplies(userId: string) {
         },
       });
 
-    let parentId;
+    // parent id of the thread
+    let parentThreadId;
+    let parentIds: [] = [];
+    let parentAuthor;
 
     threadsReplies.map((val) => {
       if (val.parentId) {
-        parentId = val.parentId;
+        parentThreadId = val.parentId;
+        parentIds.push(parentThreadId);
       }
     });
 
-    let parent;
-
-    if (parentId) {
-      parent = await fetchParentAuthorInfo(parentId);
+    if (parentThreadId) {
+      parentAuthor = await fetchParentAuthorInfo(parentIds);
     }
 
-    return { threadsReplies, parent };
+    return { threadsReplies, parentAuthor };
   } catch (error) {
     console.error("Error fetching threads replies: ", error);
     throw error;

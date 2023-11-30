@@ -9,14 +9,40 @@ interface CommunityCardProps {
   }[];
 }
 
+interface ParentInfo {
+  authorName: string;
+  authorId: string;
+  authorThreadId: string;
+}
+
+interface Author {
+  _id: string;
+  image: string;
+  name: string;
+}
+
+interface Community {
+  id: string;
+  name: string;
+  image: string;
+}
+
+interface ThreadsToRenderProps {
+  _id: string;
+  text: string;
+  author: string | Author;
+  community: Community | null;
+  children: ThreadsToRenderProps[];
+  createdAt: string;
+  __v: number;
+}
+
 interface ThreadCardProps {
   id: string;
   currentUserId: string;
-  parentInfo: {
-    authorName: string;
-    authorId: string;
-  };
   parentId: string | null;
+  parentAuthorId?: string | undefined;
+  parentName?: string | undefined;
   content: string;
   author: {
     name: string;
@@ -124,7 +150,7 @@ interface Result {
 }
 
 interface ThreadsTabProps {
-  value: string;
+  tabValue: string;
   currentUserId: string;
   accountId: string;
   accountType: string;
@@ -146,7 +172,6 @@ interface CreateThreadProps {
   path: string;
 }
 
-
 export type {
   CommunityCardProps,
   ThreadCardProps,
@@ -160,5 +185,7 @@ export type {
   ThreadsTabProps,
   Result,
   UpdateUserProps,
-  CreateThreadProps
+  CreateThreadProps,
+  ParentInfo,
+  ThreadsToRenderProps,
 };
