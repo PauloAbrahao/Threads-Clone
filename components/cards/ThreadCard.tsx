@@ -9,6 +9,8 @@ function ThreadCard({
   id,
   currentUserId,
   parentId,
+  parentAuthorId,
+  parentName,
   content,
   author,
   community,
@@ -40,7 +42,19 @@ function ThreadCard({
           <div className="flex w-full flex-col">
             <Link href={`/profile/${author.id}`} className="w-fit">
               <h4 className="cursor-pointer text-base-semibold text-light-1">
-                {author.name}
+                {!parentId ? (
+                  <span>{author.name}</span>
+                ) : (
+                  <span>
+                    {author.name} replied{" "}
+                    <Link
+                      href={parentName ? `/profile/${parentAuthorId}` : ""}
+                      className="text-sky-500 underline underline-offset-2"
+                    >
+                      {parentName && parentName}
+                    </Link>
+                  </span>
+                )}
               </h4>
             </Link>
 
@@ -106,7 +120,7 @@ function ThreadCard({
           {comments.slice(0, 2).map((comment, index) => (
             <Image
               key={index}
-              src={comment.author.image}
+              src={comment.author && comment.author.image}
               alt={`user_${index}`}
               width={24}
               height={24}
