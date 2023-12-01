@@ -1,15 +1,10 @@
 import { redirect } from "next/navigation";
 
 import { fetchCommunityPosts } from "@/lib/actions/community.actions";
-import {
-  fetchUser,
-  fetchUserPosts,
-  getReplies,
-} from "@/lib/actions/user.actions";
+import { fetchUserPosts, getReplies } from "@/lib/actions/user.actions";
 
 import ThreadCard from "../cards/ThreadCard";
 import { ParentInfo, Result, ThreadsTabProps } from "@/lib/@types/interfaces";
-import { currentUser } from "@clerk/nextjs";
 
 async function ThreadsTab({
   tabValue,
@@ -19,23 +14,18 @@ async function ThreadsTab({
 }: ThreadsTabProps) {
   let result: Result;
 
-  const user = await currentUser();
-  if (!user) return null;
-
-  const userInfo = await fetchUser(user.id);
-
-  if (accountType === "Community") {
+  if (accountType === "Community" && tabValue === "threads") {
     result = await fetchCommunityPosts(accountId);
   } else {
     result = await fetchUserPosts(accountId);
   }
 
+  let threadsToRender = result.threads;
+  let parentData;
+
   if (!result) {
     redirect("/");
   }
-
-  let threadsToRender = result.threads;
-  let parentData;
 
   // Check if the value is "replies" and fetch replies using getReplies
   if (tabValue === "replies") {

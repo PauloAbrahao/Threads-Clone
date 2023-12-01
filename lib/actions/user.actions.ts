@@ -175,7 +175,7 @@ export async function getActivity(userId: string) {
   }
 }
 
-async function fetchParentAuthorInfo(parentThreadId: []) {
+async function fetchParentAuthorInfo(parentThreadId: string[]) {
   try {
     const parentThread = await Thread.find({ _id: parentThreadId }).populate({
       path: "author",
@@ -221,7 +221,7 @@ export async function getReplies(userId: string) {
 
     // parent id of the thread
     let parentThreadId;
-    let parentIds: [] = [];
+    let parentIds: string[] = [];
     let parentAuthor;
 
     threadsReplies.map((val) => {
