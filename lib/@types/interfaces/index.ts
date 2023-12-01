@@ -126,6 +126,7 @@ interface Result {
   name: string;
   image: string;
   id: string;
+  _id?: string;
   threads: {
     _id: string;
     text: string;

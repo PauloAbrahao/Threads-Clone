@@ -39,9 +39,11 @@ async function ThreadsTab({
 
   // Check if the value is "replies" and fetch replies using getReplies
   if (tabValue === "replies") {
-    const { threadsReplies, parentAuthor } = await getReplies(userInfo._id);
-    threadsToRender = threadsReplies;
-    parentData = parentAuthor;
+    if (result._id) {
+      const { threadsReplies, parentAuthor } = await getReplies(result._id);
+      threadsToRender = threadsReplies;
+      parentData = parentAuthor;
+    }
   }
 
   let parent: ParentInfo[] = [];
