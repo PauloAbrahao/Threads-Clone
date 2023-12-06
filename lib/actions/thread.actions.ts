@@ -241,33 +241,39 @@ export async function addCommentToThread(
   }
 }
 
-export async function likeThread(threadId: string, isLiked: boolean) {
+export async function likeThread(threadId: string, userId: string) {
   connectToDB();
 
   try {
-    // Find the thread by its ID
-    const thread = await Thread.findById(threadId);
+    let thread = await Thread.findById(threadId);
 
     if (!thread) {
       throw new Error("Thread not found");
     }
 
-    if (thread.liked !== isLiked) {
-      if (thread.liked && !isLiked) {
-        thread.likeCount--;
-      }
+    const isLiked = thread.liked;
 
-      if (!thread.liked && isLiked) {
-        thread.likeCount++;
-      }
-
-      thread.liked = isLiked;
-
-      await thread.save();
+    if (isLiked) {
+      await Thread.updateOne(
+        { _id: threadId },
+        { $set: { liked: false }, $inc: { likeCount: -1 } }
+      );
+    } else {
+      await Thread.updateOne(
+        { _id: threadId },
+        { $set: { liked: true }, $inc: { likeCount: 1 } }
+      );
     }
 
-    return { liked: thread.liked, likeCount: thread.likeCount };
+    const updatedThread = await Thread.findOne({ _id: threadId });
+
+    await thread.save();
+
+    return {
+      newLiked: updatedThread.liked,
+      newLikeCount: updatedThread.likeCount,
+    };
   } catch (err: any) {
-    throw new Error(`Failed to like thread: ${err.message}`);
+    throw new Error(`Failed to update thread like: ${err.message}`);
   }
 }

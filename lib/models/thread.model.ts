@@ -5,6 +5,14 @@ const threadSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  likedBy: [
+    {
+      user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    },
+  ],
   liked: {
     type: Boolean,
     default: false,

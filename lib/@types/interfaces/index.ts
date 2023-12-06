@@ -35,6 +35,8 @@ interface ThreadsToRenderProps {
   children: ThreadsToRenderProps[];
   createdAt: string;
   __v: number;
+  liked: boolean;
+  likeCount: number;
 }
 
 interface ThreadCardProps {
@@ -61,6 +63,8 @@ interface ThreadCardProps {
     };
   }[];
   isComment?: boolean;
+  likeCount?: number;
+  liked?: boolean;
 }
 
 interface UserCardProps {
@@ -147,6 +151,8 @@ interface Result {
         image: string;
       };
     }[];
+    liked: boolean;
+    likeCount: number;
   }[];
 }
 

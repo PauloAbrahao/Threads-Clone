@@ -18,6 +18,8 @@ function ThreadCard({
   createdAt,
   comments,
   isComment,
+  likeCount,
+  liked,
 }: ThreadCardProps) {
   return (
     <article
@@ -63,7 +65,12 @@ function ThreadCard({
 
             <div className={`${isComment && "mb-10"} mt-5 flex flex-col gap-3`}>
               <div className="flex gap-3.5">
-                <LikeButton threadId={id.toString()} />
+                <LikeButton
+                  threadId={id.toString()}
+                  likeCount={likeCount}
+                  liked={liked}
+                  currentUserId={currentUserId}
+                />
 
                 <Link href={`/thread/${id}`}>
                   <Image

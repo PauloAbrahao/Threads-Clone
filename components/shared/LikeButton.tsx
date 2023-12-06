@@ -2,27 +2,32 @@
 
 import { likeThread } from "@/lib/actions/thread.actions";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
-const LikeButton = ({ threadId }: { threadId: string }) => {
+const LikeButton = ({
+  threadId,
+  likeCount,
+  liked,
+  currentUserId,
+}: {
+  threadId: string;
+  likeCount?: number;
+  liked?: boolean;
+  currentUserId: string;
+}) => {
   // State to track the liked status
-  const [isLiked, setIsLiked] = useState<boolean>(false);
-  const [count, setCount] = useState<number>(0);
-
-  // console.log('threadId', threadId);
+  const [isLiked, setIsLiked] = useState<boolean>(liked || false);
+  const [count, setCount] = useState<number>(likeCount || 0);
 
   // Handler function for liking a thread
-  const handleLikeButton = async (threadId: string) => {
-    setIsLiked(!isLiked);
-
-    const { liked, likeCount } = await likeThread(threadId, isLiked);
-    setCount(likeCount);
+  const handleLikeButton = async (threadId: string, currentUserId: string) => {
+    const { newLiked, newLikeCount } = await likeThread(threadId, currentUserId);
+    setIsLiked(newLiked);
+    setCount(newLikeCount);
   };
 
-  useEffect(() => {}, [isLiked, count]);
-
   return (
-    <button onClick={() => handleLikeButton(threadId)}>
+    <button onClick={() => handleLikeButton(threadId, currentUserId)}>
       <div className="flex flex-row justify-between gap-1 items-center">
         <Image
           src={!isLiked ? "/assets/heart-gray.svg" : "/assets/heart-filled.svg"}

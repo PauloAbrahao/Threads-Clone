@@ -89,6 +89,8 @@ async function ThreadsTab({
             }
             createdAt={thread.createdAt}
             comments={thread.children}
+            likeCount={thread.likeCount}
+            liked={thread.liked}
           />
         );
       })}
