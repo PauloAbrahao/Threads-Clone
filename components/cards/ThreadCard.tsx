@@ -19,7 +19,7 @@ function ThreadCard({
   comments,
   isComment,
   likeCount,
-  liked,
+  userLiked
 }: ThreadCardProps) {
   return (
     <article
@@ -45,7 +45,7 @@ function ThreadCard({
           <div className="flex w-full flex-col">
             <Link href={`/profile/${author.id}`} className="w-fit">
               <h4 className="cursor-pointer text-base-semibold text-light-1">
-                {!parentId ? (
+                {!parentAuthorId ? (
                   <span>{author.name}</span>
                 ) : (
                   <span>
@@ -68,8 +68,8 @@ function ThreadCard({
                 <LikeButton
                   threadId={id.toString()}
                   likeCount={likeCount}
-                  liked={liked}
-                  currentUserId={currentUserId}
+                  currentUserId={author._id}
+                  userLiked={userLiked || ""}
                 />
 
                 <Link href={`/thread/${id}`}>

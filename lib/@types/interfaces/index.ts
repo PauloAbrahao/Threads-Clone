@@ -49,6 +49,7 @@ interface ThreadCardProps {
   author: {
     name: string;
     image: string;
+    _id: string;
     id: string;
   };
   community: {
@@ -64,7 +65,7 @@ interface ThreadCardProps {
   }[];
   isComment?: boolean;
   likeCount?: number;
-  liked?: boolean;
+  userLiked?: string;
 }
 
 interface UserCardProps {

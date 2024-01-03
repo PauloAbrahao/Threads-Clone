@@ -13,6 +13,7 @@ async function Home({
   searchParams: { [key: string]: string | undefined };
 }) {
   const user = await currentUser();
+
   if (!user) return null;
 
   const userInfo = await fetchUser(user.id);
@@ -32,21 +33,25 @@ async function Home({
           <p className="no-result">No threads found</p>
         ) : (
           <>
-            {result.posts.map((post) => (
-              <ThreadCard
-                key={post._id}
-                id={post._id}
-                currentUserId={user.id}
-                parentId={post.parentId}
-                content={post.text}
-                author={post.author}
-                community={post.community}
-                createdAt={post.createdAt}
-                comments={post.children}
-                likeCount={post.likeCount}
-                liked={post.liked}
-              />
-            ))}
+            {result.posts.map((post) => {
+              const userLiked = post.likes.length > 0 ? post.likes[0].user : "";
+
+              return (
+                <ThreadCard
+                  key={post._id}
+                  id={post._id}
+                  currentUserId={user.id}
+                  parentId={post.parentId}
+                  content={post.text}
+                  author={post.author}
+                  community={post.community}
+                  createdAt={post.createdAt}
+                  comments={post.children}
+                  likeCount={post.likeCount}
+                  userLiked={userLiked}
+                />
+              );
+            })}
           </>
         )}
       </section>

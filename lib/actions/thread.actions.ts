@@ -242,38 +242,55 @@ export async function addCommentToThread(
 }
 
 export async function likeThread(threadId: string, userId: string) {
-  connectToDB();
-
   try {
-    let thread = await Thread.findById(threadId);
+    const thread = await Thread.findById(threadId);
 
     if (!thread) {
-      throw new Error("Thread not found");
+      console.log("Thread não encontrada");
+      return;
     }
 
-    const isLiked = thread.liked;
+    // Verifica se o usuário já curtiu a thread
+    const userLikedIndex = thread.likes.findIndex((like) =>
+      like.user.equals(userId)
+    );
 
-    if (isLiked) {
-      await Thread.updateOne(
-        { _id: threadId },
-        { $set: { liked: false }, $inc: { likeCount: -1 } }
-      );
-    } else {
-      await Thread.updateOne(
-        { _id: threadId },
-        { $set: { liked: true }, $inc: { likeCount: 1 } }
-      );
+    if (userLikedIndex !== -1) {
+      return;
     }
 
-    const updatedThread = await Thread.findOne({ _id: threadId });
+    thread.likeCount += 1;
+    thread.likes.push({ user: userId });
 
     await thread.save();
+  } catch (error: any) {
+    console.error("Erro ao atualizar like:", error.message);
+  }
+}
 
-    return {
-      newLiked: updatedThread.liked,
-      newLikeCount: updatedThread.likeCount,
-    };
-  } catch (err: any) {
-    throw new Error(`Failed to update thread like: ${err.message}`);
+export async function dislikeThread(threadId: string, userId: string) {
+  try {
+    const thread = await Thread.findById(threadId);
+
+    if (!thread) {
+      console.log("Thread não encontrada");
+      return;
+    }
+
+    const userLikedIndex = thread.likes.findIndex((like) =>
+      like.user.equals(userId)
+    );
+
+    if (userLikedIndex === -1) {
+      return;
+    }
+
+    thread.likes.splice(userLikedIndex, 1);
+
+    thread.likeCount -= 1;
+
+    await thread.save();
+  } catch (error: any) {
+    console.error("Erro ao atualizar deslike:", error.message);
   }
 }

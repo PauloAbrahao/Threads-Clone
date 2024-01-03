@@ -1,22 +1,18 @@
 import mongoose from "mongoose";
 
+const likeSchema = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
+});
+
 const threadSchema = new mongoose.Schema({
   text: {
     type: String,
     required: true,
   },
-  likedBy: [
-    {
-      user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-      },
-    },
-  ],
-  liked: {
-    type: Boolean,
-    default: false,
-  },
+  likes: [likeSchema],
   likeCount: {
     type: Number,
     default: 0,
