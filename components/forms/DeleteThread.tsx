@@ -22,7 +22,7 @@ function DeleteThread({
 
   return (
     <Button
-      className="flex flex-row gap-6 justify-between bg-stone-950 hover:bg-transparent"
+      className="flex flex-row gap-3 justify-between bg-stone-950 hover:bg-transparent p-0"
       onClick={async () => {
         await deleteThread(JSON.parse(threadId), pathname);
         if (!parentId || !isComment) {
@@ -30,7 +30,7 @@ function DeleteThread({
         }
       }}
     >
-      <p className="text-light-1 text-sm">Delete</p>
+      <p className="text-light-1 text-sm">Delete thread</p>
       <Image
         src="/assets/delete.svg"
         alt="delete"
