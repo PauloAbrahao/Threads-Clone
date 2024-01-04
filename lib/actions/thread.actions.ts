@@ -250,7 +250,7 @@ export async function likeThread(threadId: string, userId: string) {
       return;
     }
 
-    // Verifica se o usuário já curtiu a thread
+    // check if the user already has liked this thread
     const userLikedIndex = thread.likes.findIndex((like) =>
       like.user.equals(userId)
     );
@@ -259,8 +259,11 @@ export async function likeThread(threadId: string, userId: string) {
       return;
     }
 
-    thread.likeCount += 1;
+    // add user to liked list
     thread.likes.push({ user: userId });
+
+    // increment likeCount
+    thread.likeCount = thread.likes.length;
 
     await thread.save();
   } catch (error: any) {
@@ -285,12 +288,32 @@ export async function dislikeThread(threadId: string, userId: string) {
       return;
     }
 
+    // remove the user from the liked list
     thread.likes.splice(userLikedIndex, 1);
 
-    thread.likeCount -= 1;
+    // update the liked count
+    thread.likeCount = thread.likes.length;
 
     await thread.save();
   } catch (error: any) {
     console.error("Erro ao atualizar deslike:", error.message);
+  }
+}
+
+export async function isUserLiked(threadId: string, userId: string) {
+  try {
+    const thread = await Thread.findById(threadId);
+
+    if (!thread) {
+      throw new Error("Thread não encontrada");
+    }
+
+    // Verifica se o usuário está na lista de likes
+    const isLiked = thread.likes.some((like) => like.user.equals(userId));
+
+    return isLiked;
+  } catch (error: any) {
+    console.error("Erro ao verificar like:", error.message);
+    return false;
   }
 }
