@@ -1,65 +1,62 @@
 "use client";
 
-import { dislikeThread, likeThread } from "@/lib/actions/thread.actions";
+import {
+  dislikeThread,
+  isUserLiked,
+  likeThread,
+} from "@/lib/actions/thread.actions";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 const LikeButton = ({
   threadId,
   likeCount,
   currentUserId,
-  userLiked,
+  authorId,
 }: {
   threadId: string;
   likeCount?: number;
   currentUserId: string;
-  userLiked: string;
+  authorId: string;
 }) => {
-  // State to track the liked status
-
   const [count, setCount] = useState<number>(likeCount || 0);
+  const [isLiked, setIsLiked] = useState<boolean>(false);
 
-  // Handler function for liking a thread
-  const handleLikeButton = async (threadId: string, currentUserId: string) => {
+  useEffect(() => {
+    // Update state based on thread likes
+    setCount(likeCount || 0);
+
+    // Check if the current user already liked this thread
+    isUserLiked(threadId, currentUserId)
+      .then((result) => setIsLiked(result))
+      .catch((error) =>
+        console.error("Erro ao verificar like:", error.message)
+      );
+  }, [likeCount, currentUserId, threadId]);
+
+  const handleLikeButton = async () => {
     try {
-      await likeThread(threadId, currentUserId);
-
-      setCount(count);
+      if (isLiked) {
+        // If the user already liked the thread, dislike it
+        await dislikeThread(threadId, currentUserId);
+        setCount((prevCount) => Math.max(prevCount - 1, 0));
+      } else {
+        // If the user didn't like the thread yet, like it
+        await likeThread(threadId, authorId, currentUserId);
+        setCount((prevCount) => prevCount + 1);
+      }
+      setIsLiked(!isLiked); // Set isLiked based on current user action
     } catch (error: any) {
       console.error("Erro ao atualizar like:", error.message);
     }
   };
 
-  // Handler function for unliking a thread
-  const handleDislikeButton = async (
-    threadId: string,
-    currentUserId: string
-  ) => {
-    try {
-      await dislikeThread(threadId, currentUserId);
-
-      setCount(count);
-    } catch (error: any) {
-      console.error("Erro ao atualizar deslike:", error.message);
-    }
-  };
-
   return (
-    <button
-      onClick={
-        userLiked.toString() === currentUserId.toString()
-          ? () => handleDislikeButton(threadId, currentUserId)
-          : () => handleLikeButton(threadId, currentUserId)
-      }
-    >
+    <button onClick={handleLikeButton}>
       <div className="flex flex-row justify-between gap-1 items-center">
         <Image
-          src={
-            userLiked === currentUserId
-              ? "/assets/heart-filled.svg"
-              : "/assets/heart-gray.svg"
-          }
-          alt={userLiked === currentUserId ? "heart-filled" : "heart-gray"}
+          src={isLiked ? "/assets/heart-filled.svg" : "/assets/heart-gray.svg"}
+          alt={isLiked ? "heart-filled" : "heart-gray"}
           width={24}
           height={24}
           className="cursor-pointer object-contain"

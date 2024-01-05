@@ -65,7 +65,6 @@ interface ThreadCardProps {
   }[];
   isComment?: boolean;
   likeCount?: number;
-  userLiked?: string;
 }
 
 interface UserCardProps {

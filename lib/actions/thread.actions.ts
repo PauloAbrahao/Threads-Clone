@@ -241,7 +241,11 @@ export async function addCommentToThread(
   }
 }
 
-export async function likeThread(threadId: string, userId: string) {
+export async function likeThread(
+  threadId: string,
+  authorId: string,
+  userId: string
+) {
   try {
     const thread = await Thread.findById(threadId);
 
@@ -250,7 +254,7 @@ export async function likeThread(threadId: string, userId: string) {
       return;
     }
 
-    // Verifica se o usuário já curtiu a thread
+    // check if the user already has liked this thread
     const userLikedIndex = thread.likes.findIndex((like) =>
       like.user.equals(userId)
     );
@@ -259,8 +263,11 @@ export async function likeThread(threadId: string, userId: string) {
       return;
     }
 
-    thread.likeCount += 1;
-    thread.likes.push({ user: userId });
+    // add user to liked list
+    thread.likes.push({ user: authorId, userId: userId });
+
+    // increment likeCount
+    thread.likeCount = thread.likes.length;
 
     await thread.save();
   } catch (error: any) {
@@ -277,8 +284,8 @@ export async function dislikeThread(threadId: string, userId: string) {
       return;
     }
 
-    const userLikedIndex = thread.likes.findIndex((like) =>
-      like.user.equals(userId)
+    const userLikedIndex = thread.likes.findIndex(
+      (like) => like.userId === userId
     );
 
     if (userLikedIndex === -1) {
@@ -287,10 +294,30 @@ export async function dislikeThread(threadId: string, userId: string) {
 
     thread.likes.splice(userLikedIndex, 1);
 
-    thread.likeCount -= 1;
+    thread.likeCount = thread.likes.length;
 
     await thread.save();
   } catch (error: any) {
     console.error("Erro ao atualizar deslike:", error.message);
+  }
+}
+
+export async function isUserLiked(threadId: string, userId: string) {
+  try {
+    const thread = await Thread.findById(threadId);
+
+    if (!thread) {
+      throw new Error("Thread não encontrada");
+    }
+
+    // check if user already liked this thread
+    const isLikedByCurrentUser = thread.likes.some(
+      (like) => like.userId === userId
+    );
+
+    return isLikedByCurrentUser;
+  } catch (error: any) {
+    console.error("Erro ao verificar like:", error.message);
+    return false;
   }
 }

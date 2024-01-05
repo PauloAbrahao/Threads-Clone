@@ -19,7 +19,6 @@ function ThreadCard({
   comments,
   isComment,
   likeCount,
-  userLiked
 }: ThreadCardProps) {
   return (
     <article
@@ -68,8 +67,8 @@ function ThreadCard({
                 <LikeButton
                   threadId={id.toString()}
                   likeCount={likeCount}
-                  currentUserId={author._id}
-                  userLiked={userLiked || ""}
+                  authorId={author._id}
+                  currentUserId={currentUserId}
                 />
 
                 <Link href={`/thread/${id}`}>
