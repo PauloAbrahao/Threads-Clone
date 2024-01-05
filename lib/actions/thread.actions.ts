@@ -7,6 +7,7 @@ import { connectToDB } from "../mongoose";
 import User from "../models/user.model";
 import Thread from "../models/thread.model";
 import Community from "../models/community.model";
+import { CreateThreadProps } from "../@types/interfaces";
 
 export async function fetchPosts(pageNumber = 1, pageSize = 20) {
   connectToDB();
@@ -48,15 +49,12 @@ export async function fetchPosts(pageNumber = 1, pageSize = 20) {
   return { posts, isNext };
 }
 
-interface Params {
-  text: string,
-  author: string,
-  communityId: string | null,
-  path: string,
-}
-
-export async function createThread({ text, author, communityId, path }: Params
-) {
+export async function createThread({
+  text,
+  author,
+  communityId,
+  path,
+}: CreateThreadProps) {
   try {
     connectToDB();
 
@@ -90,9 +88,12 @@ export async function createThread({ text, author, communityId, path }: Params
 }
 
 async function fetchAllChildThreads(threadId: string): Promise<any[]> {
+  // find all child threads
   const childThreads = await Thread.find({ parentId: threadId });
 
   const descendantThreads = [];
+
+  // find all descendant threads of each child thread
   for (const childThread of childThreads) {
     const descendants = await fetchAllChildThreads(childThread._id);
     descendantThreads.push(childThread, ...descendants);
@@ -123,6 +124,7 @@ export async function deleteThread(id: string, path: string): Promise<void> {
 
     // Extract the authorIds and communityIds to update User and Community models respectively
     const uniqueAuthorIds = new Set(
+      // Maps the IDs of the authors of the descendant threads and the main thread
       [
         ...descendantThreads.map((thread) => thread.author?._id?.toString()), // Use optional chaining to handle possible undefined values
         mainThread.author?._id?.toString(),
@@ -236,5 +238,86 @@ export async function addCommentToThread(
   } catch (err) {
     console.error("Error while adding comment:", err);
     throw new Error("Unable to add comment");
+  }
+}
+
+export async function likeThread(
+  threadId: string,
+  authorId: string,
+  userId: string
+) {
+  try {
+    const thread = await Thread.findById(threadId);
+
+    if (!thread) {
+      console.log("Thread não encontrada");
+      return;
+    }
+
+    // check if the user already has liked this thread
+    const userLikedIndex = thread.likes.findIndex((like) =>
+      like.user.equals(userId)
+    );
+
+    if (userLikedIndex !== -1) {
+      return;
+    }
+
+    // add user to liked list
+    thread.likes.push({ user: authorId, userId: userId });
+
+    // increment likeCount
+    thread.likeCount = thread.likes.length;
+
+    await thread.save();
+  } catch (error: any) {
+    console.error("Erro ao atualizar like:", error.message);
+  }
+}
+
+export async function dislikeThread(threadId: string, userId: string) {
+  try {
+    const thread = await Thread.findById(threadId);
+
+    if (!thread) {
+      console.log("Thread não encontrada");
+      return;
+    }
+
+    const userLikedIndex = thread.likes.findIndex(
+      (like) => like.userId === userId
+    );
+
+    if (userLikedIndex === -1) {
+      return;
+    }
+
+    thread.likes.splice(userLikedIndex, 1);
+
+    thread.likeCount = thread.likes.length;
+
+    await thread.save();
+  } catch (error: any) {
+    console.error("Erro ao atualizar deslike:", error.message);
+  }
+}
+
+export async function isUserLiked(threadId: string, userId: string) {
+  try {
+    const thread = await Thread.findById(threadId);
+
+    if (!thread) {
+      throw new Error("Thread não encontrada");
+    }
+
+    // check if user already liked this thread
+    const isLikedByCurrentUser = thread.likes.some(
+      (like) => like.userId === userId
+    );
+
+    return isLikedByCurrentUser;
+  } catch (error: any) {
+    console.error("Erro ao verificar like:", error.message);
+    return false;
   }
 }

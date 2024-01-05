@@ -13,9 +13,11 @@ async function Home({
   searchParams: { [key: string]: string | undefined };
 }) {
   const user = await currentUser();
+
   if (!user) return null;
 
   const userInfo = await fetchUser(user.id);
+
   if (!userInfo?.onboarded) redirect("/onboarding");
 
   const result = await fetchPosts(
@@ -25,32 +27,35 @@ async function Home({
 
   return (
     <>
-      <h1 className='head-text text-left'>Home</h1>
+      <h1 className="head-text text-left">Home</h1>
 
-      <section className='mt-9 flex flex-col gap-10'>
+      <section className="mt-9 flex flex-col gap-10">
         {result.posts.length === 0 ? (
-          <p className='no-result'>No threads found</p>
+          <p className="no-result">No threads found</p>
         ) : (
           <>
-            {result.posts.map((post) => (
-              <ThreadCard
-                key={post._id}
-                id={post._id}
-                currentUserId={user.id}
-                parentId={post.parentId}
-                content={post.text}
-                author={post.author}
-                community={post.community}
-                createdAt={post.createdAt}
-                comments={post.children}
-              />
-            ))}
+            {result.posts.map((post) => {
+              return (
+                <ThreadCard
+                  key={post._id}
+                  id={post._id}
+                  currentUserId={user.id}
+                  parentId={post.parentId}
+                  content={post.text}
+                  author={post.author}
+                  community={post.community}
+                  createdAt={post.createdAt}
+                  comments={post.children}
+                  likeCount={post.likeCount}
+                />
+              );
+            })}
           </>
         )}
       </section>
 
       <Pagination
-        path='/'
+        path="/"
         pageNumber={searchParams?.page ? +searchParams.page : 1}
         isNext={result.isNext}
       />

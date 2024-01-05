@@ -20,11 +20,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ThreadValidation } from "@/lib/validations/thread";
 import { createThread } from "@/lib/actions/thread.actions";
 
-interface Props {
-  userId: string;
-}
-
-function PostThread({ userId }: Props) {
+function PostThread({ userId }: { userId: string }) {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -52,18 +48,18 @@ function PostThread({ userId }: Props) {
   return (
     <Form {...form}>
       <form
-        className='mt-10 flex flex-col justify-start gap-10'
+        className="mt-10 flex flex-col justify-start gap-10"
         onSubmit={form.handleSubmit(onSubmit)}
       >
         <FormField
           control={form.control}
-          name='thread'
+          name="thread"
           render={({ field }) => (
-            <FormItem className='flex w-full flex-col gap-3'>
-              <FormLabel className='text-base-semibold text-light-2'>
-                Content
+            <FormItem className="flex w-full flex-col gap-3">
+              <FormLabel className="text-base-semibold text-light-2">
+                Let us know what you're thinking
               </FormLabel>
-              <FormControl className='no-focus border border-dark-4 bg-dark-3 text-light-1'>
+              <FormControl className="no-focus border border-dark-4 bg-dark-3 text-light-1">
                 <Textarea rows={15} {...field} />
               </FormControl>
               <FormMessage />
@@ -71,7 +67,7 @@ function PostThread({ userId }: Props) {
           )}
         />
 
-        <Button type='submit' className='bg-primary-500'>
+        <Button type="submit" className="bg-primary-500">
           Post Thread
         </Button>
       </form>

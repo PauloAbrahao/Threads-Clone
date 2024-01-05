@@ -1,9 +1,24 @@
 import mongoose from "mongoose";
 
+const likeSchema = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
+  userId: {
+    type: String,
+  },
+});
+
 const threadSchema = new mongoose.Schema({
   text: {
     type: String,
     required: true,
+  },
+  likes: [likeSchema],
+  likeCount: {
+    type: Number,
+    default: 0,
   },
   author: {
     type: mongoose.Schema.Types.ObjectId,
@@ -19,7 +34,7 @@ const threadSchema = new mongoose.Schema({
     default: Date.now,
   },
   parentId: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
   },
   children: [
     {

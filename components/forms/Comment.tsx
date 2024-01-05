@@ -19,14 +19,9 @@ import { Button } from "../ui/button";
 
 import { CommentValidation } from "@/lib/validations/thread";
 import { addCommentToThread } from "@/lib/actions/thread.actions";
+import { CommentProps } from "@/lib/@types/interfaces";
 
-interface Props {
-  threadId: string;
-  currentUserImg: string;
-  currentUserId: string;
-}
-
-function Comment({ threadId, currentUserImg, currentUserId }: Props) {
+function Comment({ threadId, currentUserImg, currentUserId }: CommentProps) {
   const pathname = usePathname();
 
   const form = useForm<z.infer<typeof CommentValidation>>({
