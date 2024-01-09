@@ -5,6 +5,7 @@ import {
   isUserLiked,
   likeThread,
 } from "@/lib/actions/thread.actions";
+
 import Image from "next/image";
 import React, { useState, useEffect } from "react";
 

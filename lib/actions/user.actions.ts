@@ -8,7 +8,6 @@ import Thread from "../models/thread.model";
 import User from "../models/user.model";
 
 import { connectToDB } from "../mongoose";
-import { undefined } from "zod";
 import { UpdateUserProps } from "../@types/interfaces";
 
 export async function fetchUser(userId: string) {
@@ -146,7 +145,7 @@ export async function fetchUsers({
   }
 }
 
-export async function getActivity(userId: string) {
+export async function getActivityReplies(userId: string) {
   try {
     connectToDB();
 
@@ -169,6 +168,32 @@ export async function getActivity(userId: string) {
     });
 
     return replies;
+  } catch (error) {
+    console.error("Error fetching replies: ", error);
+    throw error;
+  }
+}
+
+export async function getActivityLikes(userId: string) {
+  try {
+    connectToDB();
+
+    // Find and return the threads (including parent threads) where the user has liked
+    const likedThreads = await Thread.find({
+      "likes.user": { $in: [userId] },
+    })
+      .populate({
+        path: "author",
+        model: User,
+        select: "name image _id",
+      })
+      .populate({
+        path: "likes.userMongoose",
+        model: User,
+        select: "name image _id",
+      });
+
+    return likedThreads;
   } catch (error) {
     console.error("Error fetching replies: ", error);
     throw error;

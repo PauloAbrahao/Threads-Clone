@@ -8,6 +8,7 @@ import User from "../models/user.model";
 import Thread from "../models/thread.model";
 import Community from "../models/community.model";
 import { CreateThreadProps } from "../@types/interfaces";
+import { fetchUser } from "./user.actions";
 
 export async function fetchPosts(pageNumber = 1, pageSize = 20) {
   connectToDB();
@@ -263,8 +264,14 @@ export async function likeThread(
       return;
     }
 
+    const userMongoose = await fetchUser(userId);
+
     // add user to liked list
-    thread.likes.push({ user: authorId, userId: userId });
+    thread.likes.push({
+      user: authorId,
+      userId: userId,
+      userMongoose: userMongoose,
+    });
 
     // increment likeCount
     thread.likeCount = thread.likes.length;
