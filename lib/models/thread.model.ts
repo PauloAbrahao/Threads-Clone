@@ -8,6 +8,10 @@ const likeSchema = new mongoose.Schema({
   userId: {
     type: String,
   },
+  userMongoose: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
 });
 
 const threadSchema = new mongoose.Schema({

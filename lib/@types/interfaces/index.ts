@@ -179,6 +179,18 @@ interface CreateThreadProps {
   path: string;
 }
 
+interface LikedThread {
+  _id?: string;
+  name?: string;
+  image?: string;
+  parentId?: string;
+}
+
+interface GroupedLikedThreads {
+  parentId: string;
+  users: LikedThread[];
+}
+
 export type {
   CommunityCardProps,
   ThreadCardProps,
@@ -195,4 +207,6 @@ export type {
   CreateThreadProps,
   ParentInfo,
   ThreadsToRenderProps,
+  LikedThread,
+  GroupedLikedThreads,
 };
